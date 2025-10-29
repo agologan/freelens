@@ -73,7 +73,7 @@ describe("BarChart", () => {
             {
               id: "dataset-id",
               label: "Dataset",
-              borderColor: "#00a7a0",
+              borderColor: "#4493F8",
               data: [{ x: 1_710_000_000_000, y: "1" }],
             },
           ],
@@ -118,7 +118,7 @@ describe("BarChart", () => {
             {
               id: "dataset-id",
               label: "Dataset",
-              borderColor: "#00a7a0",
+              borderColor: "#4493F8",
               data: [
                 { x: 1_704_067_200_000, y: "1" },
                 { x: 1_704_499_200_000, y: "2" },
@@ -168,7 +168,7 @@ describe("BarChart", () => {
             {
               id: "dataset-id",
               label: "Dataset",
-              borderColor: "#00a7a0",
+              borderColor: "#4493F8",
               data: [{ x: 1_710_000_000_000, y: "1" }],
             },
           ],
