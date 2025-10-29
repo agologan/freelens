@@ -63,7 +63,7 @@ const NonInjectedNodeCharts = observer(({ activeTheme, selectedMetricsTimeRange 
         id: `${id}-cpuUsage`,
         label: `Usage`,
         tooltip: `CPU cores usage`,
-        borderColor: "#00a7a0",
+        borderColor: "#4493F8",
         data: convertNodeMetricValuesToChartData(cpuUsage),
       },
       {

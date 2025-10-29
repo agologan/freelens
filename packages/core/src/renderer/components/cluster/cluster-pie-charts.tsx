@@ -98,7 +98,7 @@ const renderCharts = (defaultColor: string, lastPoints: Partial<Record<keyof Clu
       },
       {
         data: [cpuLimits, Math.max(0, cpuAllocatableCapacity - (cpuLimits ?? cpuAllocatableCapacity))],
-        backgroundColor: ["#00a7a0", defaultColor],
+        backgroundColor: ["#4493F8", defaultColor],
         id: "cpuLimits",
         label: "Limits",
       },
@@ -127,7 +127,7 @@ const renderCharts = (defaultColor: string, lastPoints: Partial<Record<keyof Clu
       },
       {
         data: [memoryLimits, Math.max(0, memoryAllocatableCapacity - (memoryLimits ?? memoryAllocatableCapacity))],
-        backgroundColor: ["#00a7a0", defaultColor],
+        backgroundColor: ["#4493F8", defaultColor],
         id: "memoryLimits",
         label: "Limits",
       },
@@ -159,7 +159,7 @@ const renderCharts = (defaultColor: string, lastPoints: Partial<Record<keyof Clu
         <PieChart
           data={cpuData}
           title="CPU"
-          legendColors={["#c93dce", "#4caf50", "#00a7a0", "#032b4d", defaultColor]}
+          legendColors={["#c93dce", "#4caf50", "#4493F8", "#032b4d", defaultColor]}
         />
         {(cpuLimits ?? cpuAllocatableCapacity) > cpuAllocatableCapacity && renderLimitWarning()}
       </div>
@@ -167,7 +167,7 @@ const renderCharts = (defaultColor: string, lastPoints: Partial<Record<keyof Clu
         <PieChart
           data={memoryData}
           title="Memory"
-          legendColors={["#c93dce", "#4caf50", "#00a7a0", "#032b4d", defaultColor]}
+          legendColors={["#c93dce", "#4caf50", "#4493F8", "#032b4d", defaultColor]}
         />
         {(memoryLimits ?? memoryAllocatableCapacity) > memoryAllocatableCapacity && renderLimitWarning()}
       </div>

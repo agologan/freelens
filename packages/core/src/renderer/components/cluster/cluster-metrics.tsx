@@ -59,7 +59,7 @@ const NonInjectedClusterMetrics = observer((props: Dependencies) => {
     metricType === "cpu"
       ? normalizeMetrics(visibleMetrics?.cpuUsage).data.result[0].values
       : normalizeMetrics(visibleMetrics?.memoryUsage).data.result[0].values;
-  const colors = { cpu: "#00a7a0", memory: "#C93DCE" };
+  const colors = { cpu: "#4493F8", memory: "#C93DCE" };
   const data = metricValues.map((value) => ({
     x: value[0] * 1000, // Convert Unix seconds to milliseconds for Chart.js
     y: parseFloat(value[1]).toFixed(3),
