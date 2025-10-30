@@ -6,6 +6,7 @@
 
 import { loggerInjectionToken } from "@freelensapp/logger";
 import { getInjectable } from "@ogre-tools/injectable";
+import { webUtils } from "electron";
 import attemptInstallsInjectable from "./attempt-installs.injectable";
 
 export type InstallOnDrop = (files: File[]) => Promise<void>;
@@ -20,7 +21,7 @@ const installOnDropInjectable = getInjectable({
     return (files) => {
       logger.info("Install from D&D");
 
-      return attemptInstalls(files.map(({ path }) => path));
+      return attemptInstalls(files.map((file) => webUtils.getPathForFile(file)));
     };
   },
 });

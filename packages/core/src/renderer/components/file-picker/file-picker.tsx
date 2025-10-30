@@ -8,6 +8,7 @@ import "./file-picker.scss";
 
 import { Icon } from "@freelensapp/icon";
 import { Spinner } from "@freelensapp/spinner";
+import { webUtils } from "electron";
 import fse from "fs-extra";
 import _ from "lodash";
 import { makeObservable, observable } from "mobx";
@@ -184,7 +185,7 @@ class DefaultedFilePicker extends React.Component<FilePickerProps & typeof defau
 
           paths.push(destinationPath);
 
-          return fse.copyFile(file.path, destinationPath);
+          return fse.copyFile(webUtils.getPathForFile(file), destinationPath);
         });
 
         await Promise.all(promises);

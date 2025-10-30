@@ -25,6 +25,9 @@ export default getGlobalOverride(electronAppInjectable, () => {
     clearRecentDocuments(): void {
       throw new Error("Method not implemented.");
     }
+    getRecentDocuments(): string[] {
+      throw new Error("Method not implemented.");
+    }
     configureHostResolver(options: Electron.ConfigureHostResolverOptions): void {
       void options;
       throw new Error("Method not implemented.");
@@ -232,7 +235,7 @@ export default getGlobalOverride(electronAppInjectable, () => {
       throw new Error("Method not implemented.");
     }
 
-    setProxy(config: ProxyConfig): void {
+    async setProxy(config: ProxyConfig): Promise<void> {
       void config;
       throw new Error("Method not implemented.");
     }
