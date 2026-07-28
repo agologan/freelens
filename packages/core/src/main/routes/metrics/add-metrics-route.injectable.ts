@@ -65,6 +65,7 @@ const loadMetricsFor =
     cluster: Cluster,
     prometheusPath: string,
     queryParams: Partial<Record<string, string>>,
+    pathPrefix?: string,
   ): Promise<any[]> => {
     const queries = promQueries.map((p) => p.trim());
     const loaders = new Map<string, Promise<any>>();
@@ -74,7 +75,7 @@ const loadMetricsFor =
         for (const [attempt, lastAttempt] of ATTEMPTS.entries()) {
           // retry
           try {
-            return await getMetrics(cluster, prometheusPath, { query, ...queryParams });
+            return await getMetrics(cluster, prometheusPath, { query, ...queryParams }, pathPrefix);
           } catch (error) {
             if (
               !isRequestError(error) ||
@@ -121,6 +122,7 @@ const addMetricsRouteInjectable = getRouteInjectable({
 
         prometheusMetadata.provider = provider?.kind;
         prometheusMetadata.autoDetected = !cluster.preferences.prometheusProvider?.type;
+        const pathPrefix = cluster.preferences.prometheus?.prefix || provider.defaultPathPrefix;
 
         if (!prometheusPath) {
           prometheusMetadata.success = false;
@@ -130,13 +132,13 @@ const addMetricsRouteInjectable = getRouteInjectable({
 
         // return data in same structure as query
         if (typeof payload === "string") {
-          const [data] = await loadMetrics([payload], cluster, prometheusPath, queryParams);
+          const [data] = await loadMetrics([payload], cluster, prometheusPath, queryParams, pathPrefix);
 
           return { response: data };
         }
 
         if (Array.isArray(payload)) {
-          const data = await loadMetrics(payload, cluster, prometheusPath, queryParams);
+          const data = await loadMetrics(payload, cluster, prometheusPath, queryParams, pathPrefix);
 
           return { response: data };
         }
@@ -147,7 +149,7 @@ const addMetricsRouteInjectable = getRouteInjectable({
             .entries(data)
             .map(([queryName, queryOpts]) => provider.getQuery({ ...queryOpts, mountpoints }, queryName));
 
-          const result = await loadMetrics(queries, cluster, prometheusPath, queryParams);
+          const result = await loadMetrics(queries, cluster, prometheusPath, queryParams, pathPrefix);
           const response = object.fromEntries(object.keys(data).map((metricName, i) => [metricName, result[i]]));
 
           prometheusMetadata.success = true;

@@ -17,6 +17,7 @@ export type GetMetrics = (
   cluster: Cluster,
   prometheusPath: string,
   queryParams: RequestMetricsParams & { query: string },
+  pathPrefix?: string,
 ) => Promise<unknown>;
 
 /**
@@ -27,12 +28,12 @@ export type GetMetrics = (
 async function fetchDirectMetrics(
   proxyFetch: ProxyFetch,
   cluster: Cluster,
-  prometheusPrefix: string,
+  configuredPathPrefix: string,
   directUrl: string,
   requestMethod: "GET" | "POST",
   params: URLSearchParams,
 ): Promise<unknown> {
-  const queryRangePath = `${directUrl.replace(/\/+$/, "")}${prometheusPrefix}/api/v1/query_range`;
+  const queryRangePath = `${directUrl.replace(/\/+$/, "")}${configuredPathPrefix}/api/v1/query_range`;
   const url = requestMethod === "GET" ? `${queryRangePath}?${params.toString()}` : queryRangePath;
   const headers: Record<string, string> = {};
   const bearerToken = cluster.preferences.prometheus?.bearerToken;
@@ -67,8 +68,8 @@ const getMetricsInjectable = getInjectable({
     const k8sRequest = di.inject(k8sRequestInjectable);
     const proxyFetch = di.inject(proxyFetchInjectable);
 
-    return async (cluster, prometheusPath, queryParams) => {
-      const prometheusPrefix = cluster.preferences.prometheus?.prefix || "";
+    return async (cluster, prometheusPath, queryParams, pathPrefix) => {
+      const configuredPathPrefix = pathPrefix ?? cluster.preferences.prometheus?.prefix ?? "";
       const requestMethod = cluster.preferences.prometheusRequestMethod === "GET" ? "GET" : "POST";
       const params = new URLSearchParams();
 
@@ -79,10 +80,10 @@ const getMetricsInjectable = getInjectable({
       const directUrl = cluster.preferences.prometheus?.directUrl;
 
       if (directUrl) {
-        return fetchDirectMetrics(proxyFetch, cluster, prometheusPrefix, directUrl, requestMethod, params);
+        return fetchDirectMetrics(proxyFetch, cluster, configuredPathPrefix, directUrl, requestMethod, params);
       }
 
-      const queryRangePath = `/api/v1/namespaces/${prometheusPath}/proxy${prometheusPrefix}/api/v1/query_range`;
+      const queryRangePath = `/api/v1/namespaces/${prometheusPath}/proxy${configuredPathPrefix}/api/v1/query_range`;
 
       if (requestMethod === "GET") {
         return k8sRequest(cluster, `${queryRangePath}?${params.toString()}`, {
