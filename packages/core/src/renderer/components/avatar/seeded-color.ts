@@ -3,25 +3,22 @@
  * Licensed under MIT License. See LICENSE in root directory for more information.
  */
 
-/**
- * Saturation and lightness are fixed, and only the hue is derived from the
- * seed, so that every colour this can produce is dark enough to carry white
- * text. At 27% lightness the worst hue still clears WCAG AA against white with
- * room to spare -- see the test, which checks all 360 of them.
- */
-const saturation = 60;
-const lightness = 27;
+/** RGB samples from the Plasma colour map, interpolated per seed. */
+const plasma = [
+  [13, 8, 135],
+  [70, 3, 159],
+  [114, 1, 168],
+  [156, 23, 158],
+  [192, 58, 131],
+  [225, 100, 98],
+  [248, 148, 65],
+  [253, 195, 40],
+  [240, 249, 33],
+] as const;
 
-/**
- * A colour for `seed`, stable across renders and across restarts.
- *
- * Replaces `randomColor({ seed, luminosity: "dark" })` from the `randomcolor`
- * package, which was last released in 2020-07. Its "dark" is a brightness band
- * relative to the hue rather than a contrast guarantee: measured over 3000
- * seeds, 40% of what it returned failed WCAG AA against white text, the worst
- * being #dfe202 at 1.40:1.
- */
-export const seededColor = (seed: string): string => {
+type Rgb = readonly [number, number, number];
+
+const seededHash = (seed: string): number => {
   // FNV-1a
   let hash = 0x811c9dc5;
 
@@ -30,7 +27,23 @@ export const seededColor = (seed: string): string => {
     hash = Math.imul(hash, 0x01000193);
   }
 
-  // The comma form, because jsdom's CSS parser does not accept the
-  // space-separated one and drops the declaration instead of failing
-  return `hsl(${(hash >>> 0) % 360}, ${saturation}%, ${lightness}%)`;
+  return hash >>> 0;
+};
+
+const seededRgb = (seed: string): Rgb => {
+  const position = (seededHash(seed) / 0xffffffff) * (plasma.length - 1);
+  const index = Math.min(Math.floor(position), plasma.length - 2);
+  const amount = position - index;
+  const start = plasma[index];
+  const end = plasma[index + 1];
+  const interpolate = (channel: number) => Math.round(start[channel] + (end[channel] - start[channel]) * amount);
+
+  return [interpolate(0), interpolate(1), interpolate(2)];
+};
+
+/** A stable Plasma colour for `seed`. */
+export const seededColor = (seed: string): string => {
+  const [red, green, blue] = seededRgb(seed);
+
+  return `rgb(${red}, ${green}, ${blue})`;
 };
