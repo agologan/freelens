@@ -16,7 +16,7 @@ jobs:
 
     # Never on a fork: it has none of the signing and publishing secrets. Every
     # other job needs this one, so they are all skipped with it.
-    if: github.repository_owner == 'freelensapp'
+    if: github.repository_owner == 'agologan'
 
     permissions: write-all
 
@@ -903,6 +903,7 @@ jobs:
       # action worked!"), so a separate stapler validate would only be one
       # more CloudKit request outside the retries.
       - name: Staple PKGs
+        if: always() && false # Disabled in this fork.
         shell: bash
         run: |
           set -eo pipefail
